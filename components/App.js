@@ -16,23 +16,36 @@ App = React.createClass({
                 gif: gif,  // b
                 searchingText: searchingText  // c
             });
-        }.bind(this));
+        }.bind(this))
+        .then(response => console.log ('Udane przekazanie URL')) 
+        .catch(error => console.error('Something went wrong ', error));
     },
     getGif: function(searchingText, callback) {  // 1.
-        var url = 'http://api.giphy.com/v1/gifs/random?api_key=' + 'PLv6zi9yKGz56IDesdoP2q6QlckAzHom' + '&tag=' + searchingText;  // 2.
-        var xhr = new XMLHttpRequest();  // 3.
-        xhr.open('GET', url);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText).data; // 4.
-                var gif = {  // 5.
-                    url: data.fixed_width_downsampled_url,
-                    sourceUrl: data.url
+        return new Promise(
+            function (resolve, reject) {
+                var url = 'http://api.giphy.com/v1/gifs/random?api_key=' + 'PLv6zi9yKGz56IDesdoP2q6QlckAzHom' + '&tag=' + searchingText;  // 2.
+                var xhr = new XMLHttpRequest();  // 3.
+                xhr.open('GET', url);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText).data; // 4.
+                        var gif = {  // 5.
+                            url: data.fixed_width_downsampled_url,
+                            sourceUrl: data.url
+                        };
+                        callback(gif)
+                        resolve(this.response)
+                    } else{
+                        reject(new Error(this.statusText))
+                    }
                 };
-                callback(gif);  // 6.
+                xhr.onerror = function(){
+                    reject(new Error(
+                        `XMLHttpRequest Error: ${this.statusText}`))
+                }
+                xhr.send();
             }
-        };
-        xhr.send();
+        )   
     },
     render: function() {
 
