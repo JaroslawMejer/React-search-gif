@@ -10,17 +10,18 @@ App = React.createClass({
         this.setState({
             loading: true  // 2.
         });
-        this.getGif(searchingText, function(gif) {  // 3.
+        this.getGif(searchingText) 
+        .then(response => {
             this.setState({  // 4
                 loading: false,  // a
                 gif: gif,  // b
                 searchingText: searchingText  // c
-            });
-        }.bind(this))
-        .then(response => console.log ('Udane przekazanie URL')) 
+            }),
+            console.log('Poprawne przekazanie URL' + searchingText)
+        })
         .catch(error => console.error('Something went wrong ', error));
     },
-    getGif: function(searchingText, callback) {  // 1.
+    getGif: function(searchingText) {  // 1.
         return new Promise(
             function (resolve, reject) {
                 var url = 'http://api.giphy.com/v1/gifs/random?api_key=' + 'PLv6zi9yKGz56IDesdoP2q6QlckAzHom' + '&tag=' + searchingText;  // 2.
@@ -33,7 +34,6 @@ App = React.createClass({
                             url: data.fixed_width_downsampled_url,
                             sourceUrl: data.url
                         };
-                        callback(gif)
                         resolve(this.response)
                     } else{
                         reject(new Error(this.statusText))
