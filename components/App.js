@@ -11,7 +11,7 @@ App = React.createClass({
             loading: true  // 2.
         });
         this.getGif(searchingText) 
-        .then(response => {
+        .then(gif => {
             this.setState({  // 4
                 loading: false,  // a
                 gif: gif,  // b
@@ -34,7 +34,7 @@ App = React.createClass({
                             url: data.fixed_width_downsampled_url,
                             sourceUrl: data.url
                         };
-                        resolve(this.response)
+                        resolve(gif)
                     } else{
                         reject(new Error(this.statusText))
                     }
